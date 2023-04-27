@@ -123,15 +123,28 @@ def add_barber():
     })
     save_barbers()
     print("New barber added successfully.")
-
-# Main program loop
-while True:
     
+#print main menu
+def print_mainmenu ():
     print("\n------------------------------")
     print("||   1. Register new user   ||")
     print("||   2. Login               ||")
     print("||   3. Exit                ||")
-    print("------------------------------")
+    print("------------------------------")    
+    
+#print user menu 
+def print_usermenu():
+    print("\n-----------------------------------")
+    print("||   1. Create new appointment   ||")
+    print("||   2. Cancel appointment       ||")
+    print("||   3. Add reviews              ||")
+    print("||   4. Back                     ||")
+    print("-----------------------------------")
+
+# Main program loop
+while True:
+    
+    print_mainmenu()
     choice = input("Enter your choice: ")
     if choice == "1":
         register()
@@ -140,11 +153,7 @@ while True:
         if username:
             print("Welcome, {}!\n\n".format(username))
             while True:
-                print("\n-----------------------------------")
-                print("||   1. Account Details          ||")
-                print("||   2. Current appointments     ||")
-                print("||   3. Logout                   ||")
-                print("-----------------------------------")
+                print_mainmenu()
                 choice = input("Enter your choice: ")
                 print("\n")
                 
@@ -154,12 +163,7 @@ while True:
                     while True:
                         
                         display_appointments(username)
-                        print("\n-----------------------------------")
-                        print("||   1. Create new appointment   ||")
-                        print("||   2. Cancel appointment       ||")
-                        print("||   3. Add reviews              ||")
-                        print("||   4. Back                     ||")
-                        print("-----------------------------------")
+                        print_usermenu()
                         choice = input("Enter your choice: ")
                         
                         if choice ==    "1":
