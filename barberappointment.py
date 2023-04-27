@@ -11,10 +11,21 @@ with open("users.json", "r") as f:
 def save_users():
     with open("users.json", "w") as f:
         json.dump(users, f)
+        
+# Load barber data from file
+with open("barbers.json", "r") as f:
+    barbers = json.load(f)
+        
+# Function to save barber data to file
+def save_barbers():
+    with open("barbers.json", "w") as f:
+        json.dump(barbers, f)
 
 # Function to hash passwords
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+
 
 # Function to register a new user
 def register():
@@ -39,6 +50,7 @@ def register():
             print("User registered successfully.")
             break
 
+        
 # Function to authenticate a user
 def login():
     username = input("Enter your username: ")
@@ -64,8 +76,9 @@ def display_appointments(username):
         print("--------------------")
     else:
         print("You have no appointments.")
-# Main program loop
 
+
+#Function to cancel appointments
 def cancel_appointment(username):
     if users[username]["appointments"]:
         print("Your current appointments are:")
@@ -82,6 +95,7 @@ def cancel_appointment(username):
     else:
         print("You have no appointments.")
         
+# Function to display account details /username/no. of appointments/ when the account was created
 def show_account_details(username):
     user_data = users[username]
     print("|------------------------------------------|")
@@ -90,6 +104,27 @@ def show_account_details(username):
     print(" Number of appointments: {}".format(len(user_data["appointments"])))
     print("|------------------------------------------|")
     
+
+# Function to add a review for a barber
+def add_review(username):
+    pass
+
+
+def add_barber():
+    name = input("Enter the name of the new barber: ")
+    services = input("Enter the specialty of the new barber: ")
+    rating = input("Enter the rating of the new barber: ")
+    reviews = [] # Empty list of reviews for the new barber
+    barbers.append({
+        "name": name,
+        "specialty": services,
+        "rating": rating,
+        "reviews": reviews
+    })
+    save_barbers()
+    print("New barber added successfully.")
+
+# Main program loop
 while True:
     
     print("\n------------------------------")
@@ -138,13 +173,15 @@ while True:
                             cancel_appointment(username)
                         
                         elif choice == "3":
-                            pass
+                            add_review(username)
                             
                         elif choice == "4":
                             break
                     
               
                 elif choice == "3":
+                    add_barber()
+                elif choice =="4":
                     break
         
     elif choice == "3":
