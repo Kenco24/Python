@@ -18,7 +18,7 @@ def hash_password(password):
 
 # Function to register a new user
 def register():
-    while True:
+  while True:
             
         username = input("[type 'exit' to go back, case does not matter ] Enter a username: ")
         if username.lower()== "exit":
@@ -75,8 +75,8 @@ def cancel_appointment(username):
                 del users[username]["appointments"][index]
                 save_users()
                 print("Appointment canceled.")
-        except:
-            print("Error")
+        except TypeError as err:
+            print(err)
         else:
             print("Invalid index.")
     else:
@@ -122,7 +122,8 @@ while True:
                         print("\n-----------------------------------")
                         print("||   1. Create new appointment   ||")
                         print("||   2. Cancel appointment       ||")
-                        print("||   3. Back                     ||")
+                        print("||   3. Add reviews              ||")
+                        print("||   4. Back                     ||")
                         print("-----------------------------------")
                         choice = input("Enter your choice: ")
                         
@@ -135,8 +136,11 @@ while True:
                             
                         elif choice == "2":
                             cancel_appointment(username)
-                            
+                        
                         elif choice == "3":
+                            pass
+                            
+                        elif choice == "4":
                             break
                     
               
