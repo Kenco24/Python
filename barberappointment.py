@@ -65,15 +65,18 @@ def login():
 
 # Function to create an appointment
 def create_appointment():
+    choice=input("To go back type 'back' , else type something random to continue with creating an appointment: ")
+    if choice=="back".lower():
+        return
     date = input("Enter the date of the appointment (format: HH:MM,AM/PM,Day): ")
     return date
 
 def display_appointments(username):
     if users[username]["appointments"]:
-        print("\nYour current appointments are:\n--------------------")
+        print("\nYour current appointments are:\n----------------------------------------------------------")
         for i, appointment in enumerate(users[username]["appointments"]):
             print("{} - {}".format(i+1, appointment))
-        print("--------------------")
+        print("-----------------------------------------------------------")
     else:
         print("You have no appointments.")
 
@@ -81,7 +84,11 @@ def display_appointments(username):
 #Function to cancel appointments
 def cancel_appointment(username):
     if users[username]["appointments"]:
-        print("Your current appointments are:")
+        
+        choice=input("To go back type 'back' , else type something random to continue with canceling appointments ")
+        if choice=="back".lower():
+                return
+       
         try: 
             index = int(input("Enter the index of the appointment to cancel: ")) - 1
             if 0 <= index < len(users[username]["appointments"]):
@@ -107,23 +114,76 @@ def show_account_details(username):
 
 # Function to add a review for a barber
 def add_review(username):
-    pass
+    choice=input("To go back type 'back' , else type something random to continue with adding a review: ")
+    if choice=="back".lower():
+        return
+
+    barber_name=input("What is the name of the barber?: ")
+    
+    for b in barbers:
+         barber = barbers[b]
+         if b == barber_name:
+            
+            rating = float(input("Enter your rating (0-5): "))
+            review = input("Enter your review: ")
+            barber["reviews"].append({
+                "client": username,
+                "rating": rating,
+                "review": review
+            })
+            barber["rating"] = sum([r["rating"] for r in barber["reviews"]])/len(barber["reviews"])
+            with open('barbers.json', 'w') as f:
+                json.dump(barbers, f, indent=2)
+            print("Review added!")
+            return
+    else:
+        print("Barber not found.")
 
 
+
+# Function to add Barbers
 def add_barber():
+    choice=input("To go back type 'back' , else type something random to continue with the barber registration: ")
+    if choice=="back".lower():
+        return
     name = input("Enter the name of the new barber: ")
-    services = input("Enter the specialty of the new barber: ")
-    rating = input("Enter the rating of the new barber: ")
+    location= input("Enter the location of the new barer: ")
+    services = input("Enter the services of the new barber: ")
+    rating = float(input("Enter the rating of the new barber: "))
     reviews = [] # Empty list of reviews for the new barber
-    barbers.append({
-        "name": name,
-        "specialty": services,
-        "rating": rating,
-        "reviews": reviews
-    })
+    barbers[name] = {
+                "location" : location,
+                "services": services,
+                "rating": rating,
+                "reviews": []
+            }
     save_barbers()
     print("New barber added successfully.")
-    
+
+# Function to list barbers
+def list_barbers():
+    i=1
+    for b in barbers:
+        barber = barbers[b]
+        print("|--+--+--Barber #" + str(i) + "--+--+--|")
+        i=i+1
+        print("Name: " + b)
+        print("Location: {}".format(barber["location"]))
+        print("Services: {}".format(barber["services"]))
+        print("Rating: {:.1f}".format(barber["rating"]))
+        if len(barber["reviews"]) > 0:
+            print("Reviews:")
+            
+            for review in barber["reviews"]:
+                print("-- Client: {}".format(review["client"]) + " -- Rating: {}".format(review["rating"]) + " -- Review: '{}'".format(review["review"]) )
+                
+        else:
+            print("No reviews yet.")
+        print("|--+--+--+---+---+--+--+--|")
+        print()
+
+
+
 #print main menu
 def print_mainmenu ():
     print("\n------------------------------")
@@ -135,12 +195,23 @@ def print_mainmenu ():
 #print user menu 
 def print_usermenu():
     print("\n-----------------------------------")
-    print("||   1. Create new appointment   ||")
-    print("||   2. Cancel appointment       ||")
-    print("||   3. Add reviews              ||")
-    print("||   4. Back                     ||")
+    print("||   1. Account Details          ||")
+    print("||   2. Current appointments     ||")
+    print("||   3. Add Barber               ||")
+    print("||   4. List of Barbers          ||")
+    print("||   5. Add Reviews              ||")
+    print("||   6. Logout                   ||")
     print("-----------------------------------")
 
+def  print_appointmentmenu():
+     print("\n-----------------------------------")
+     print("||   1. Create new appointment   ||")
+     print("||   2. Cancel appointment       ||")
+     print("||   3. Back                     ||")
+     print("||   4. Back                     ||")
+     print("-----------------------------------")
+     
+     
 # Main program loop
 while True:
     
@@ -153,7 +224,7 @@ while True:
         if username:
             print("Welcome, {}!\n\n".format(username))
             while True:
-                print_mainmenu()
+                print_usermenu()
                 choice = input("Enter your choice: ")
                 print("\n")
                 
@@ -163,7 +234,7 @@ while True:
                     while True:
                         
                         display_appointments(username)
-                        print_usermenu()
+                        print_appointmentmenu()
                         choice = input("Enter your choice: ")
                         
                         if choice ==    "1":
@@ -177,7 +248,7 @@ while True:
                             cancel_appointment(username)
                         
                         elif choice == "3":
-                            add_review(username)
+                            break
                             
                         elif choice == "4":
                             break
@@ -186,6 +257,10 @@ while True:
                 elif choice == "3":
                     add_barber()
                 elif choice =="4":
+                    list_barbers()
+                elif choice =="5":
+                    add_review(username)
+                elif choice =="6":
                     break
         
     elif choice == "3":
