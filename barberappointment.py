@@ -56,7 +56,7 @@ def login():
     username = input("Enter your username: ")
     password = input("Enter your password: ")
     hashed_password = hash_password(password)
-    if users.get(username) and users[username]["password"] == hashed_password:
+    if users.get(username) and users[username]["password"] == hashed_password:   
         print("\nLogin successful.")
         return username
     else:
@@ -64,12 +64,17 @@ def login():
         return None
 
 # Function to create an appointment
-def create_appointment():
+def create_appointment(username):
     choice=input("To go back type 'back' , else type something random to continue with creating an appointment: ")
     if choice=="back".lower():
         return
-    date = input("Enter the date of the appointment (format: HH:MM,AM/PM,Day): ")
-    return date
+    appointment = input("Enter the date of the appointment (format: HH:MM,AM/PM,Day): ")
+    barber=input("What baber do you plan to go to?: ")
+    
+    users[username]["appointments"].append([appointment,barber])
+    save_users()
+    print("Appointment created:", appointment)
+    
 
 def display_appointments(username):
     if users[username]["appointments"]:
@@ -162,6 +167,7 @@ def add_barber():
 
 # Function to list barbers
 def list_barbers():
+    print("|-+-+-+-List of barbers-+-+-+-|\n")
     i=1
     for b in barbers:
         barber = barbers[b]
@@ -183,13 +189,17 @@ def list_barbers():
         print()
 
 
+def barber_schedule():
+    #Task : Update the create_appointmnet to check wheter the barber is avaliable
+    pass
 
 #print main menu
 def print_mainmenu ():
     print("\n------------------------------")
     print("||   1. Register new user   ||")
     print("||   2. Login               ||")
-    print("||   3. Exit                ||")
+    print("||   3. List of barbers     ||")
+    print("||   4. Exit                ||")
     print("------------------------------")    
     
 #print user menu 
@@ -238,11 +248,7 @@ while True:
                         choice = input("Enter your choice: ")
                         
                         if choice ==    "1":
-                            appointment = create_appointment()
-                            barber=input("What babershop do you plan to go to?")
-                            users[username]["appointments"].append([appointment,barber])
-                            save_users()
-                            print("Appointment created:", appointment)
+                            create_appointment(username)
                             
                         elif choice == "2":
                             cancel_appointment(username)
@@ -264,6 +270,8 @@ while True:
                     break
         
     elif choice == "3":
+        list_barbers()
+    elif choice == "4":
         break
     else:
         print("Invalid choice.")

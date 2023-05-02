@@ -1,0 +1,36 @@
+{
+  "John": {
+    "location": "Chicago",
+    "services": "FreshCuts",
+    "rating": 3.5666666666666664,
+    "reviews": [
+      {
+        "client": "Josh",
+        "rating": 4.8,
+        "review": "Loved it , got a really nice cut, the workers were friendly and fun "
+      },
+      {
+        "client": "Kenan",
+        "rating": 3.8,
+        "review": "It was alright, just a normal barbershop"
+      },
+      {
+        "client": "Kenan",
+        "rating": 2.1,
+        "review": "This time it was awful, my cut took like an hour and it turned out pretty mid "
+      }
+    ]
+  },
+  "Jimmy": {
+    "location": "Los Angeles",
+    "services": "Massages",
+    "rating": 4.5,
+    "reviews": [
+      {
+        "client": "Kenan",
+        "rating": 4.5,
+        "review": "Pretty clean and profesional"
+      }
+    ]
+  }
+}
