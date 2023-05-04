@@ -61,7 +61,12 @@ def register_user():
             users[username_info] = {
                 "password": hashed_password,
                 "appointments": [],
-                "time_created": time.time()
+                "time_created": time.time(),
+                "location" : "",
+                "phone_number" : "",
+                "age" : None,
+                
+                
             }
             save_users()
             status_label.config(text="User registered successfully!", fg="green", font=("calibri", 11))
@@ -111,7 +116,12 @@ def login_user():
     password_info=password_entry2.get()
     
     hashed_password = hash_password(password_info)
-    if users.get(username_info) and users[username_info]["password"] == hashed_password:   
+    if len(username_info)==0:
+        login_status_label.config(text="Please enter your username and password",fg="red", font=("calibri", 10))
+      
+      
+        
+    elif users.get(username_info) and users[username_info]["password"] == hashed_password:   
         login_status_label.config(text="Login successful",fg="green", font=("calibri", 11))
         screen2.after(250,screen2.destroy)
         screen.after(500,screen.destroy)
@@ -120,6 +130,8 @@ def login_user():
         
     else:
         login_status_label.config(text="Inccorect username or password",fg="red", font=("calibri", 11))
+        
+    
         
 def login():
     global screen2
@@ -149,6 +161,7 @@ def login():
     tk.Label(screen2,text="").pack()
     tk.Button(screen2,text="Back",width=10,height=1,command=(screen2.destroy)).pack()
     
+    
 def user_screen(username_info):
     global screen3
     screen3 = tk.Tk()
@@ -172,9 +185,8 @@ def user_screen(username_info):
     
 
 def account_details():
-    
-    
-    screen4=tk.Tk()
+    global screen4
+    screen4=tk.Toplevel(screen3)
     screen4.geometry("300x250")
     screen4.title("Account Details")
     
@@ -192,17 +204,90 @@ def account_details():
     user_data = users[username_info]
    
     listbox_acc_details.insert(0," Username: {} ".format(username_info))
-    listbox_acc_details.insert(1," Time created: {} ".format(time.ctime(user_data["time_created"])))
-    listbox_acc_details.insert(2," Nubmer of appointments: {} ".format(len(user_data["appointments"])))
+    listbox_acc_details.insert(1," Age: {} ".format(user_data["age"]))
+    listbox_acc_details.insert(2," Location: {} ".format(user_data["location"]))
+    listbox_acc_details.insert(3," Phone Number: {} ".format(user_data["phone_number"]))
+    listbox_acc_details.insert(4," Time created: {} ".format(time.ctime(user_data["time_created"])))
+    listbox_acc_details.insert(5," Nubmer of appointments: {} ".format(len(user_data["appointments"])))
+    
+    
   
+def add_infouser():
+    
+    try:
+    
+        location_info=location_entry.get()
+        age_info=int(age_entry.get())
+        phone_info=phone_number_entry.get() 
+        
+        if age_info>100 or age_info<10:
+            addinfo_status_label.config(text="Age must be between 10-100",fg="Red",font=("calibir",10))
+    
+           
+        elif not len(phone_info)==9:
+            addinfo_status_label.config(text="Phone number must be 9 digits as the format says\nOnly numbers!",fg="red",font=("calibir",10))
+            
+        else:   
+            char='-'
+            phone_info=char.join(phone_info[i:i+3] for i in range(0, len(phone_info), 3))
+            users[username_info]["location"]=location_info
+            users[username_info]["phone_number"]=phone_info
+            users[username_info]["age"]=age_info
+                    
+                
+            save_users()
+            addinfo_status_label.config(text="Additional information registered sucessfully!", fg="green", font=("calibri", 10))
+            screen4.destroy()
+            account_details()
+            screen7.after(1000,screen7.destroy)
+                
+
+        
+      
+    except ValueError as e:
+        addinfo_status_label.config(text="Error " + str(e),fg="Red",font=("calibir",10))
+    except TypeError as e :
+        addinfo_status_label.config(text="Error " + str(e),fg="Red",font=("calibir",10))
+        
 
     
 def add_info():
-    pass
+    global screen7
+    screen7=tk.Toplevel(screen4)
+    screen7.geometry("300x250")
+    screen7.title("Additional info")
+    
+    location=""
+    age=int
+    phone=""
+    
+    global location_entry
+    global age_entry
+    global phone_number_entry
+    global addinfo_status_label
+    tk.Label(screen7,text="Enter location: ").place(x=20,y=20)
+    location_entry=tk.Entry(screen7,textvariable=location)
+    location_entry.place(x=160,y=20)
+    tk.Label(screen7,text="Enter age: ").place(x=20,y=50)
+    age_entry=tk.Entry(screen7,textvariable=age)
+    age_entry.place(x=160,y=50)
+    tk.Label(screen7,text="Enter phone number \n(format - ex 071845218)").place(x=20,y=80)
+    phone_number_entry=tk.Entry(screen7,textvariable=phone)
+    phone_number_entry.place(x=160,y=80)
+    addinfo_status_label=tk.Label(screen7,text="")
+    addinfo_status_label.place(x=10,y=150)
+    addinfo_button=tk.Button(screen7,text="Add info",width=15,height=3,command=add_infouser).place(x=150,y=180)
+    
+    tk.Button(screen7,text="Back",width=15,height=3,command=(screen7.destroy)).place(x=10,y=180)
+    
+    
+    
     
 def current_appointments():
 
-    screen5=tk.Tk()
+    global screen5
+    
+    screen5=tk.Toplevel(screen3)
     screen5.geometry("600x400")
     screen5.title("Current Appointments")
     
@@ -227,8 +312,8 @@ def current_appointments():
     else:
         pass
 
-    review = tk.StringVar()
-    cancel_index = tk.StringVar()
+    review = ""
+    cancel_index = int
     
 
     
@@ -254,7 +339,14 @@ def current_appointments():
 
 
 def add_appointment():
-    pass
+    screen8=tk.Toplevel(screen5)
+    screen8.geometry("350x200")
+    screen8.title("Creating appointment")
+    
+
+    tk.Label(screen8,text="Enter the barbershop you plan to visit").place(x=20,y=50,)
+    tk.Label(screen8,text="Enter the date of the appointment \n(format: HH:MM,AM/PM,Day): ").place(x=20,y=100)
+    
 def cancel_appointment():
 
    
@@ -285,6 +377,10 @@ def add_barber():
     screen6.title("Add a barber")
     
     
+    
+    
+    
+    
 def list_barbers():
     pass
 def add_review():
@@ -311,5 +407,6 @@ def main_screen():
     tk.Button(text="Register",height="2",width="30",command=register).pack()
     
     screen.mainloop()
-    
+
+
 main_screen()
