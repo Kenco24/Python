@@ -61,7 +61,12 @@ def register_user():
             users[username_info] = {
                 "password": hashed_password,
                 "appointments": [],
-                "time_created": time.time()
+                "time_created": time.time(),
+                "location" : "",
+                "phone_number" : "",
+                "age" : None,
+                
+                
             }
             save_users()
             status_label.config(text="User registered successfully!", fg="green", font=("calibri", 11))
@@ -95,7 +100,7 @@ def register():
     username_entry=tk.Entry(screen1,textvariable=username)
     username_entry.pack()
     tk.Label(screen1,text="Password* ").pack()
-    password_entry=tk.Entry(screen1,textvariable = password)
+    password_entry=tk.Entry(screen1,textvariable = password,show="*")
     password_entry.pack()
     tk.Label(screen1,text="").pack()
     tk.Button(screen1,text="Register",width=10,height=1,command=register_user).pack()
@@ -111,7 +116,12 @@ def login_user():
     password_info=password_entry2.get()
     
     hashed_password = hash_password(password_info)
-    if users.get(username_info) and users[username_info]["password"] == hashed_password:   
+    if len(username_info)==0:
+        login_status_label.config(text="Please enter your username and password",fg="red", font=("calibri", 10))
+      
+      
+        
+    elif users.get(username_info) and users[username_info]["password"] == hashed_password:   
         login_status_label.config(text="Login successful",fg="green", font=("calibri", 11))
         screen2.after(250,screen2.destroy)
         screen.after(500,screen.destroy)
@@ -120,6 +130,8 @@ def login_user():
         
     else:
         login_status_label.config(text="Inccorect username or password",fg="red", font=("calibri", 11))
+        
+    
         
 def login():
     global screen2
@@ -149,8 +161,10 @@ def login():
     tk.Label(screen2,text="").pack()
     tk.Button(screen2,text="Back",width=10,height=1,command=(screen2.destroy)).pack()
     
+    
 def user_screen(username_info):
     global screen3
+    global user_screen_status_label
     screen3 = tk.Tk()
     screen3.geometry("300x500")
     screen3.title(username_info + "'s User Menu")
@@ -160,21 +174,22 @@ def user_screen(username_info):
     tk.Label(screen3,text="").pack()
     tk.Button(screen3,text="Current Appointments",height="2",width="30",command=current_appointments).pack()
     tk.Label(screen3,text="").pack()
-    tk.Button(screen3,text="Add Barber",height="2",width="30",command=add_barber).pack()
+    tk.Button(screen3,text="Add Barber",height="2",width="30",command=add_barber_screen).pack()
     tk.Label(screen3,text="").pack()
     tk.Button(screen3,text="List of Barbers",height="2",width="30",command=list_barbers).pack()
     tk.Label(screen3,text="").pack()
     tk.Button(screen3,text="Add reviews",height="2",width="30",command=add_review).pack()
     tk.Label(screen3,text="").pack()
     tk.Button(screen3,text="Logout",height="2",width="30",command=logout).pack()
+    user_screen_status_label=tk.Label(screen3,text="")
+    user_screen_status_label.pack()
     
     screen3.mainloop()
     
 
 def account_details():
-    
-    
-    screen4=tk.Tk()
+    global screen4
+    screen4=tk.Toplevel(screen3)
     screen4.geometry("300x250")
     screen4.title("Account Details")
     
@@ -192,17 +207,91 @@ def account_details():
     user_data = users[username_info]
    
     listbox_acc_details.insert(0," Username: {} ".format(username_info))
-    listbox_acc_details.insert(1," Time created: {} ".format(time.ctime(user_data["time_created"])))
-    listbox_acc_details.insert(2," Nubmer of appointments: {} ".format(len(user_data["appointments"])))
+    listbox_acc_details.insert(1," Age: {} ".format(user_data["age"]))
+    listbox_acc_details.insert(2," Location: {} ".format(user_data["location"]))
+    listbox_acc_details.insert(3," Phone Number: {} ".format(user_data["phone_number"]))
+    listbox_acc_details.insert(4," Time created: {} ".format(time.ctime(user_data["time_created"])))
+    listbox_acc_details.insert(5," Nubmer of appointments: {} ".format(len(user_data["appointments"])))
+    
+    
   
+def add_infouser():
+    
+    try:
+    
+        location_info=location_entry.get()
+        age_info=int(age_entry.get())
+        phone_info=phone_number_entry.get() 
+        
+        if age_info>100 or age_info<10:
+            addinfo_status_label.config(text="Age must be between 10-100",fg="Red",font=("calibir",10))
+    
+           
+        elif not len(phone_info)==9:
+            addinfo_status_label.config(text="Phone number must be 9 digits as the format says\nOnly numbers!",fg="red",font=("calibir",10))
+            
+        else:   
+            char='-'
+            phone_info=char.join(phone_info[i:i+3] for i in range(0, len(phone_info), 3))
+            users[username_info]["location"]=location_info
+            users[username_info]["phone_number"]=phone_info
+            users[username_info]["age"]=age_info
+                    
+                
+            save_users()
+            addinfo_status_label.config(text="Additional information registered sucessfully!", fg="green", font=("calibri", 10))
+            screen4.destroy()
+            account_details()
+            screen7.after(1000,screen7.destroy)
+                
+
+        
+      
+    except ValueError as e:
+        addinfo_status_label.config(text="Error " + str(e),fg="Red",font=("calibir",10))
+    except TypeError as e :
+        addinfo_status_label.config(text="Error " + str(e),fg="Red",font=("calibir",10))
+        
 
     
 def add_info():
-    pass
+    global screen7
+    screen7=tk.Toplevel(screen4)
+    screen7.geometry("300x250")
+    screen7.title("Additional info")
+    
+    location=""
+    age=int
+    phone=""
+    
+    global location_entry
+    global age_entry
+    global phone_number_entry
+    global addinfo_status_label
+    
+    tk.Label(screen7,text="Enter location: ").place(x=20,y=20)
+    location_entry=tk.Entry(screen7,textvariable=location)
+    location_entry.place(x=160,y=20)
+    tk.Label(screen7,text="Enter age: ").place(x=20,y=50)
+    age_entry=tk.Entry(screen7,textvariable=age)
+    age_entry.place(x=160,y=50)
+    tk.Label(screen7,text="Enter phone number \n(format - ex 071845218)").place(x=20,y=80)
+    phone_number_entry=tk.Entry(screen7,textvariable=phone)
+    phone_number_entry.place(x=160,y=80)
+    addinfo_status_label=tk.Label(screen7,text="")
+    addinfo_status_label.place(x=10,y=150)
+    addinfo_button=tk.Button(screen7,text="Add info",width=15,height=3,command=add_infouser).place(x=150,y=180)
+    
+    tk.Button(screen7,text="Back",width=15,height=3,command=(screen7.destroy)).place(x=10,y=180)
+    
+    
     
 def current_appointments():
 
-    screen5=tk.Tk()
+    global screen5
+
+    
+    screen5=tk.Toplevel(screen3)
     screen5.geometry("600x400")
     screen5.title("Current Appointments")
     
@@ -227,8 +316,8 @@ def current_appointments():
     else:
         pass
 
-    review = tk.StringVar()
-    cancel_index = tk.StringVar()
+    review = ""
+    cancel_index = int
     
 
     
@@ -251,10 +340,62 @@ def current_appointments():
   
 
 
-
+def add_appointment_user():
+ 
+   
+    try:
+       
+            
+        barber=barbershop_entry.get()
+        if len(username_info)==0:
+            add_appointment_status.config(text="Barber cannot be null!",fg="red",font=("calibir",11))
+            
+        if barber in barbers:
+            appointment=appointment_entry.get()
+            if len(appointment)==0:
+                add_appointment_status.config(text="Date cannot be null!",fg="red",font=("calibir",11))
+            else:
+                users[username_info]["appointments"].append([appointment,barber])
+                save_users()
+                screen5.destroy()
+                current_appointments()
+                appointment_status.config(text="Appointment added!", fg="green", font=("calibir", 11))
+            
+        else:
+             add_appointment_status.config(text="Barber ' " + barber +" '  does not exist!", fg="red", font=("calibir", 11))
+    except Exception as e:
+        add_appointment_status.config(text="error" + e)
+        
+        
+       
+        
 
 def add_appointment():
-    pass
+    global screen8
+    screen8=tk.Toplevel(screen5)
+    screen8.geometry("350x200")
+    screen8.title("Creating appointment")
+    
+    global barbershop_entry
+    global appointment_entry
+    global add_appointment_status
+    
+    barbershop_info=""
+    appointment_info=""
+
+    tk.Label(screen8,text="Enter the barbershop you plan to visit: ").place(x=0,y=50,)
+    tk.Label(screen8,text="Enter the date of the appointment: \n(format: HH:MM,AM/PM,Day) ").place(x=0,y=100)
+    barbershop_entry=tk.Entry(screen8,textvariable=barbershop_info)
+    barbershop_entry.place(x=220,y=50)
+    appointment_entry=tk.Entry(screen8,textvariable=appointment_info)
+    appointment_entry.place(x=220,y=100)
+    tk.Button(screen8,text="Add Appointment", width=15,height=2,command=add_appointment_user).place(x=100,y=150)
+    add_appointment_status=tk.Label(screen8,text="")
+    add_appointment_status.place(x=120,y=20)
+    tk.Button(screen8,text="Back",width=10,height=2,command=screen8.destroy).place(x=10,y=150)
+    
+    
+    
 def cancel_appointment():
 
    
@@ -264,6 +405,8 @@ def cancel_appointment():
         if 0 <= index < len(users[username_info]["appointments"]):
             del users[username_info]["appointments"][index]
             save_users()
+            screen5.destroy()
+            current_appointments()
             appointment_status.config(text="Appointment canceled", fg="green", font=("calibir", 11))
         else:
             raise ValueError("Invalid index")
@@ -277,20 +420,136 @@ def cancel_appointment():
 
 
     
-   
-    
 def add_barber():
-    screen6=tk.Tk()
+    try:
+    
+        name = barbername_entry.get()
+        location= barber_location_entry.get()
+        services = barber_services_entry.get()
+        rating = 0
+        reviews = [] 
+        if name in barbers:
+            addbarber_status_label.config(text="Barber already exists",fg="red",font=("calibir",11))
+        else:
+            
+            barbers[name] = {
+                        "location" : location,
+                        "services": services,
+                        "rating": rating,
+                        "reviews": []
+                    }
+            user_screen_status_label.config(text="Barber added succesfully!",fg="green",font=("calibir",11) )
+            save_barbers()
+            screen6.destroy()
+            
+    except (Exception,TypeError)as e:
+        addbarber_status_label.config(text="Error " + e,fg="red",font=("calibir",11))
+    
+    
+def add_barber_screen():
+    global screen6
+    screen6=tk.Toplevel(screen3)
     screen6.geometry("300x350")
     screen6.title("Add a barber")
+    barbname=""
+    location=""
+    services=""
+    
+    
+    global addbarber_status_label
+    global barber_location_entry
+    global barbername_entry
+    global barber_services_entry
+    
+    tk.Label(screen6,text="Enter Barber name: ").place(x=20,y=20)
+    barbername_entry=tk.Entry(screen6,textvariable=barbname)
+    barbername_entry.place(x=160,y=20)
+    tk.Label(screen6,text="Enter Location: ").place(x=20,y=50)
+    barber_location_entry=tk.Entry(screen6,textvariable=location)
+    barber_location_entry.place(x=160,y=50)
+    tk.Label(screen6,text="Enter services ").place(x=20,y=80)
+    barber_services_entry=tk.Entry(screen6,textvariable=services)
+    barber_services_entry.place(x=160,y=80)
+    addbarber_status_label=tk.Label(screen6,text="")
+    addbarber_status_label.place(x=10,y=150)
+    addbarber_button=tk.Button(screen6,text="Add",width=15,height=3,command=add_barber).place(x=150,y=180)
+    
+    tk.Button(screen6,text="Back",width=15,height=3,command=(screen6.destroy)).place(x=10,y=180)
     
     
 def list_barbers():
-    pass
+    screen9=tk.Toplevel(screen3)
+    screen9.geometry("500x400")
+    screen9.title("List of barbers")
+    
+    
+    barbername=""
+    global barber_name_entry
+    global barber_review_status
+    
+    listbox_barbers=tk.Listbox(screen9)
+    listbox_barbers.configure(width=75)
+    listbox_barbers.pack()
+    tk.Label(screen9,text="To see barbers review, Enter the barbers name and click the 'VIEW'button").pack()
+    barber_name_entry=tk.Entry(screen9,textvariable=barbername)
+    barber_name_entry.pack()
+    tk.Button(screen9,text="VIEW",width=15,height=3,command=view_barber_review).place(x=270,y=230)
+    barber_review_status=tk.Label(screen9,text="")
+    barber_review_status.pack()
+    tk.Button(screen9,text="Back",width=15,height=3,command=(screen9.destroy)).place(x=120,y=230)
+    
+    
+    
+    i=1
+    for b in barbers:
+        barber = barbers[b]
+       
+        info_str = "Name: {} || Location: {} || Services: {} || Rating: {:.1f} ".format(b, barber["location"], barber["services"], barber["rating"])
+        listbox_barbers.insert(i,info_str)
+        i=i+1
+          
+          
+def view_barber_review():
+     
+     screen10=tk.Tk()
+     screen10.geometry("750x300")
+     screen10.title("Barbers reviews")
+     
+     listbox_barber_reviews=tk.Listbox(screen10)
+     listbox_barber_reviews.configure(width=150)
+     listbox_barber_reviews.pack()
+     tk.Button(screen10,text="Back",width=10,height=2,command=(screen10.destroy)).pack()
+     i=0
+     try:
+        barbname=barber_name_entry.get()
+        if len(barbname)==0:
+            barber_review_status.config(text="Please enter a name into the box",fg="red",font=("calibir",11))
+            screen10.destroy()
+        elif barbname in barbers:
+            if barbers[barbname]["reviews"]:
+                for review in barbers[barbname]["reviews"]:
+                    listbox_barber_reviews.insert(i,"-- Client: {}".format(review["client"]) + " -- Rating: {}".format(review["rating"]) + " -- Review: '{}'".format(review["review"]) )
+                    i=i+1
+            
+            else:
+                barber_review_status.config(text="Barber ' " + barbname + " ' has no reviews!",fg="red",font=("calibir",11))
+                screen10.destroy()
+            
+        else:
+            barber_review_status.config(text="Barber ' " + barbname + " ' does not exist",fg="red",font=("calibir",11))
+            screen10.destroy()
+            
+     except TypeError as e:
+         barber_review_status.config(text="Error: " + e,fg="red",font=("calibir",11))
+         screen10.destroy()
+         
+     
+     
+              
+   
 def add_review():
     pass
-def openclose():
-    pass
+
 def logout():
     screen3.after(1,screen3.destroy)
     main_screen()
@@ -311,5 +570,6 @@ def main_screen():
     tk.Button(text="Register",height="2",width="30",command=register).pack()
     
     screen.mainloop()
-    
+
+
 main_screen()
