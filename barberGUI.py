@@ -443,7 +443,7 @@ def add_barber():
             screen6.destroy()
             
     except (Exception,TypeError)as e:
-        addbarber_status_label.config(text="Error " + e,fg="red",font=("calibir",11))
+        addbarber_status_label.config(text="Error " + e)
     
     
 def add_barber_screen():

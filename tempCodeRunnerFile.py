@@ -1,0 +1,2 @@
+
+            if barbers[barbname]["reviews"]:
