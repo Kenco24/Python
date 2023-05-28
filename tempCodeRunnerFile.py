@@ -1,2 +1,1 @@
-
-            if barbers[barbname]["reviews"]:
+t=
