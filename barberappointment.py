@@ -42,9 +42,12 @@ def register():
             password = input("Enter a password: ")
             hashed_password = hash_password(password)
             users[username] = {
-                "password": hashed_password,
-                "appointments": [],
-                "time_created": time.time()
+                    "password": hashed_password,
+                    "appointments": [],
+                    "time_created": time.time(),
+                    "location" : "",
+                    "phone_number" : "",
+                    "age" : None,
             }
             save_users()
             print("User registered successfully.")

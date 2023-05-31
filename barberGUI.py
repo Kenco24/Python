@@ -32,6 +32,12 @@ def check_valid_entry(str):
         return True
     else:
         return False
+
+def check_password_confirmation(pass1,pass2):
+    if pass1 == pass2:
+        return True
+    else:
+        return False
     
 def register_user():
     try: 
@@ -39,6 +45,7 @@ def register_user():
         password_info=password.get()
         confirm_password_info=confirm_password_entry.get()
 
+        
         status_label=tk.Label(register_screen,text="")
         status_label.pack()
         space = " "
@@ -62,8 +69,8 @@ def register_user():
             
         elif not check_valid_entry(password_info):
             status_label.config(text="Invalid entry password must be longer then 8 characters!",fg="red",font=("calibir",11))
-        elif not confirm_password_info == password:
-            status_label.config(text="The passwords don't match!",fg = "red",font=("calibir",11))
+        elif not check_password_confirmation(confirm_password_info,password_info):
+            status_label.config(text="Passwords don't match",fg="red",font=("calibir",11))
                 
         
         
